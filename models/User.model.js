@@ -3,16 +3,18 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
-    name: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     email: {
       type: String,
       required: true,
       unique: true,
       match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
     },
+    emailConfirm: { type: Boolean, default: false},
     age: { type: Number, required: true },
-    sexo: { type: String, enum: ["Feminino", "Masculino", "Outros"] },
-    dataNasc: { type: Date },
+    sexo: { type: String, enum: ["Feminino", "Masculino", "Outros"], required: true },
+    dataNasc: { type: String, required: true },
+    passwordHash: { type: String, required: true },
     orientacaoSexual: {
       type: String,
       enum: [
@@ -25,11 +27,10 @@ const UserSchema = new Schema(
         "pansexual",
         "queer",
         "outro",
-      ],
+      ], required: true,
     },
     cidade: {
       type: String,
-      required: true,
       enum: [
         "Acre (AC)",
         "Alagoas (AL)",
@@ -58,7 +59,7 @@ const UserSchema = new Schema(
         "São Paulo (SP)",
         "Sergipe (SE)",
         "Tocantins (TO)",
-      ],
+      ], required: true,
     },
     profilePic: {
       type: String,
@@ -76,7 +77,7 @@ const UserSchema = new Schema(
         "relacionamento não monogamico",
         "poliamor",
         "noivo",
-      ],
+      ], required: true,
     },
     mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {
@@ -91,11 +92,14 @@ const UserSchema = new Schema(
         "web-dev",
         "data-analytics",
         "cybersecurity",
-      ],
+      ], required: true,
     },
-    // bio: "",
-    // chats: [ref: chat],
-    // posts: [ref: posts]
+
+    bio: { type: String },
+    chats: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
+    posts: [{ type: Schema.Types.ObjectId, ref: "Posts" }],
+    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,
