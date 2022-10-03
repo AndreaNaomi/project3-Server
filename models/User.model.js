@@ -10,9 +10,13 @@ const UserSchema = new Schema(
       unique: true,
       match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
     },
-    emailConfirm: { type: Boolean, default: false},
+    emailConfirm: { type: Boolean, default: false },
     age: { type: Number, required: true },
-    sexo: { type: String, enum: ["Feminino", "Masculino", "Outros"], required: true },
+    sexo: {
+      type: String,
+      enum: ["Feminino", "Masculino", "Outros"],
+      required: true,
+    },
     dataNasc: { type: String, required: true },
     passwordHash: { type: String, required: true },
     orientacaoSexual: {
@@ -27,7 +31,8 @@ const UserSchema = new Schema(
         "pansexual",
         "queer",
         "outro",
-      ], required: true,
+      ],
+      required: true,
     },
     cidade: {
       type: String,
@@ -59,7 +64,8 @@ const UserSchema = new Schema(
         "São Paulo (SP)",
         "Sergipe (SE)",
         "Tocantins (TO)",
-      ], required: true,
+      ],
+      required: true,
     },
     profilePic: {
       type: String,
@@ -78,8 +84,8 @@ const UserSchema = new Schema(
         "relacionamento não monogamico",
         "poliamor",
         "noivo",
-      ], required: true,
-
+      ],
+      required: true,
     },
     mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {
@@ -94,7 +100,8 @@ const UserSchema = new Schema(
         "web-dev",
         "data-analytics",
         "cybersecurity",
-      ], required: true,
+      ],
+      required: true,
     },
     bio: { type: String, minlength: 10, maxlength: 500 },
     chats: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
@@ -106,7 +113,6 @@ const UserSchema = new Schema(
     timestamps: true,
   }
 );
-
 
 const UserModel = mongoose.model("User", UserSchema);
 

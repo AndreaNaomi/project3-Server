@@ -152,6 +152,20 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
+router.get("/all", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const loggedInUser = req.currentUser;
+    const allUsers = await UserModel.find(loggedInUser._id, {
+      passwordHash: 0,
+    });
+
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    console.log(error);
+    return res(400).json(error);
+  }
+});
+
 router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
   try {
     const loggedInUser = req.currentUser;
@@ -186,20 +200,6 @@ router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
 
     const postsFromUser = await PostModel.deleteMany({ author: idUser });
 
-    // postsFromUser.forEach( async (post) => {
-    //     await PostModel.findByIdAndDelete(post._id)
-    // })
-
-    // const deletedPosts = await PostModel.deleteMany({ author: idUser });
-
-    // const chatsFromUser = await ChatModel.findOne(idUser);
-
-    // const deletedChats = await PostModel.deleteMany({ author: idUser });
-
-    // chatsFromUser.forEach( async (chats) => {
-    //   await PostModel.findByIdAndDelete(chats._id)
-    // })
-
     return res.status(200).json({
       // deletedChats,
       deletedUser,
@@ -210,5 +210,75 @@ router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
     return res.status(400).json(error);
   }
 });
+
+router.put(
+  "/follow/:idUserFollowed",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
+    const idUserFollowing = req.currentUser._id;
+    const { idUserFollowed } = req.params;
+
+    try {
+      const idUserFollowing = req.currentUser._id;
+      const { idUserFollowed } = req.params;
+
+      const userFollowing = await UserModel.findByIdAndUpdate(
+        idUserFollowing,
+        {
+          $addToSet: { following: idUserFollowed },
+        },
+        { new: true }
+      );
+
+      const userFollowed = await UserModel.findByIdAndUpdate(idUserFollowed, {
+        $addToSet: { followers: idUserFollowing },
+      });
+
+      const mailOptions = {
+        from: "projectsbyAna@hotmail.com",
+        to: userFollowed.email,
+        subject: "Alguém te seguiu!",
+        html: `<p>Você tem um novo seguidor: ${userFollowed.username}! :)</p>`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return res.status(200).json(userFollowing);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  }
+);
+
+router.put(
+  "/unfollow/:idUserUnfollowed",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
+    try {
+      const idUserUnfollowing = req.currentUser._id;
+      const { idUserUnfollowed } = req.params;
+
+      const userUnfollowing = await UserModel.findByIdAndUpdate(
+        idUserUnfollowing,
+        {
+          $pull: { following: idUserUnfollowed },
+        },
+        {
+          new: true,
+        }
+      );
+
+
+
+      return res.status(200).json(userUnfollowing);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  }
+);
 
 module.exports = router;
