@@ -144,7 +144,7 @@ router.get("/user/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await UserModel.findById(id);
+    const user = await UserModel.find({ id });
 
     return res.status(200).json(user);
   } catch (error) {
@@ -152,63 +152,133 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
+router.get("/all", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const loggedInUser = req.currentUser;
+    const allUsers = await UserModel.find(loggedInUser._id, {
+      passwordHash: 0,
+    });
+
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    console.log(error);
+    return res(400).json(error);
+  }
+});
+
 router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const loggedInUser = req.currentUser;
+    console.log(req.body);
+
+    const editedUser = await UserModel.findByIdAndUpdate(
+      loggedInUser._id,
+      {
+        ...req.body,
+      },
+      { new: true, runValidators: true }
+    );
+
+    delete editedUser._doc.passwordHash;
+    console.log(editedUser);
+    return res.status(200).json(editedUser);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
+
+router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const idUser = req.currentUser._id;
+    console.log(idUser);
+
+    const deletedUser = await UserModel.findByIdAndDelete(idUser);
+    delete deletedUser._doc.passwordHash;
+
+    // const deletedChats = await ChatModel.deleteMany({ author: idUser })
+
+    const postsFromUser = await PostModel.deleteMany({ author: idUser });
+
+    return res.status(200).json({
+      // deletedChats,
+      deletedUser,
+      postsFromUser,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
+
+router.put(
+  "/follow/:idUserFollowed",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
+    const idUserFollowing = req.currentUser._id;
+    const { idUserFollowed } = req.params;
+
     try {
-      const loggedInUser = req.currentUser;
-      console.log(req.body);
-  
-      const editedUser = await UserModel.findByIdAndUpdate(
-        loggedInUser._id,
+      const idUserFollowing = req.currentUser._id;
+      const { idUserFollowed } = req.params;
+
+      const userFollowing = await UserModel.findByIdAndUpdate(
+        idUserFollowing,
         {
-          ...req.body,
+          $addToSet: { following: idUserFollowed },
         },
-        { new: true, runValidators: true }
+        { new: true }
       );
-  
-      delete editedUser._doc.passwordHash;
-      console.log(editedUser);
-      return res.status(200).json(editedUser);
+
+      const userFollowed = await UserModel.findByIdAndUpdate(idUserFollowed, {
+        $addToSet: { followers: idUserFollowing },
+      });
+
+      const mailOptions = {
+        from: "projectsbyAna@hotmail.com",
+        to: userFollowed.email,
+        subject: "Alguém te seguiu!",
+        html: `<p>Você tem um novo seguidor: ${userFollowed.username}! :)</p>`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return res.status(200).json(userFollowing);
     } catch (error) {
       console.log(error);
       return res.status(400).json(error);
     }
-  });
+  }
+);
 
-  // router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
-  //   try {
+router.put(
+  "/unfollow/:idUserUnfollowed",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
+    try {
+      const idUserUnfollowing = req.currentUser._id;
+      const { idUserUnfollowed } = req.params;
 
-  //       const idUser = req.currentUser._id
+      const userUnfollowing = await UserModel.findByIdAndUpdate(
+        idUserUnfollowing,
+        {
+          $pull: { following: idUserUnfollowed },
+        },
+        {
+          new: true,
+        }
+      );
 
-  //       const deletedUser = await UserModel.findByIdAndDelete({idUser}, {$pull: {posts: posts, chats: chats} });
-  //       delete deletedUser._doc.passwordHash;
 
-  //       const postsFromUser = await PostModel.findOne({idUser});
 
-  //       // postsFromUser.forEach( async (posts) => { 
-  //       //     await PostModel.findByIdAndDelete(posts._id)
-  //       // })
-
-  //       const deletedPosts = await PostModel.deleteMany({ author: idUser });
-        
-  //       const chatsFromUser = await ChatModel.findOne(idUser);
-        
-  //       const deletedChats = await PostModel.deleteMany({ author: idUser });
-
-  //       chatsFromUser.forEach( async (chats) => { 
-  //         await PostModel.findByIdAndDelete(chats._id)
-  //       })
-
-        
-  //   return res.status(200).json({
-  //     deleteduser: deletedUser,
-  //     postsFromUser: deletedPosts,
-  //     chatsFromUser: deletedChats,
-  //   })
-
-  //   } catch (error) {
-  //       console.log(error);
-  //       return res.status(400).json(error);
-  //   }
-  // })
+      return res.status(200).json(userUnfollowing);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  }
+);
 
 module.exports = router;
