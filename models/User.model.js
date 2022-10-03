@@ -86,6 +86,7 @@ const UserSchema = new Schema(
         "noivo",
       ],
       required: true,
+
     },
     mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {

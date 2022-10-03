@@ -16,8 +16,8 @@ app.use("/users", UsersRoute);
 const PostsRoute = require("./routes/posts.routes")
 app.use("/posts", PostsRoute)
 
-// const ChatsRoute = require("./routes/chats.routes")
-// app.use("/chat", ChatsRoute) 
+const ChatsRoute = require("./routes/chats.routes")
+app.use("/chat", ChatsRoute) 
 
 
 app.listen(Number(process.env.PORT), () => {
