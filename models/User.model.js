@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
-    name: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
     email: {
       type: String,
       required: true,
@@ -13,6 +13,7 @@ const UserSchema = new Schema(
     age: { type: Number, required: true },
     sexo: { type: String, enum: ["Feminino", "Masculino", "Outros"] },
     dataNasc: { type: Date },
+    passwordHash: { type: String, required: true },
     orientacaoSexual: {
       type: String,
       enum: [
@@ -93,9 +94,11 @@ const UserSchema = new Schema(
         "cybersecurity",
       ],
     },
-    bio: "",
-    chats: [ref: chat],
-    posts: [ref: posts]
+    bio: { type: String },
+    chats: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
+    posts: [{ type: Schema.Types.ObjectId, ref: "Posts" }],
+    followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,
