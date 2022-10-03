@@ -80,7 +80,6 @@ const UserSchema = new Schema(
         "noivo",
       ], required: true,
 
-
     },
     mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {
@@ -97,7 +96,6 @@ const UserSchema = new Schema(
         "cybersecurity",
       ], required: true,
     },
-
     bio: { type: String, minlength: 10, maxlength: 500 },
     chats: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],

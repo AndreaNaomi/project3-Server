@@ -144,7 +144,7 @@ router.get("/user/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await UserModel.findById(id);
+    const user = await UserModel.find({ id });
 
     return res.status(200).json(user);
   } catch (error) {
@@ -153,62 +153,62 @@ router.get("/user/:id", async (req, res) => {
 });
 
 router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
-    try {
-      const loggedInUser = req.currentUser;
-      console.log(req.body);
-  
-      const editedUser = await UserModel.findByIdAndUpdate(
-        loggedInUser._id,
-        {
-          ...req.body,
-        },
-        { new: true, runValidators: true }
-      );
-  
-      delete editedUser._doc.passwordHash;
-      console.log(editedUser);
-      return res.status(200).json(editedUser);
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json(error);
-    }
-  });
+  try {
+    const loggedInUser = req.currentUser;
+    console.log(req.body);
 
-  // router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
-  //   try {
+    const editedUser = await UserModel.findByIdAndUpdate(
+      loggedInUser._id,
+      {
+        ...req.body,
+      },
+      { new: true, runValidators: true }
+    );
 
-  //       const idUser = req.currentUser._id
+    delete editedUser._doc.passwordHash;
+    console.log(editedUser);
+    return res.status(200).json(editedUser);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
 
-  //       const deletedUser = await UserModel.findByIdAndDelete({idUser}, {$pull: {posts: posts, chats: chats} });
-  //       delete deletedUser._doc.passwordHash;
+router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
+  try {
+    const idUser = req.currentUser._id;
+    console.log(idUser);
 
-  //       const postsFromUser = await PostModel.findOne({idUser});
+    const deletedUser = await UserModel.findByIdAndDelete(idUser);
+    delete deletedUser._doc.passwordHash;
 
-  //       // postsFromUser.forEach( async (posts) => { 
-  //       //     await PostModel.findByIdAndDelete(posts._id)
-  //       // })
+    // const deletedChats = await ChatModel.deleteMany({ author: idUser })
 
-  //       const deletedPosts = await PostModel.deleteMany({ author: idUser });
-        
-  //       const chatsFromUser = await ChatModel.findOne(idUser);
-        
-  //       const deletedChats = await PostModel.deleteMany({ author: idUser });
+    const postsFromUser = await PostModel.deleteMany({ author: idUser });
 
-  //       chatsFromUser.forEach( async (chats) => { 
-  //         await PostModel.findByIdAndDelete(chats._id)
-  //       })
+    // postsFromUser.forEach( async (post) => {
+    //     await PostModel.findByIdAndDelete(post._id)
+    // })
 
-        
-  //   return res.status(200).json({
-  //     deleteduser: deletedUser,
-  //     postsFromUser: deletedPosts,
-  //     chatsFromUser: deletedChats,
-  //   })
+    // const deletedPosts = await PostModel.deleteMany({ author: idUser });
 
-  //   } catch (error) {
-  //       console.log(error);
-  //       return res.status(400).json(error);
-  //   }
-  // })
+    // const chatsFromUser = await ChatModel.findOne(idUser);
+
+    // const deletedChats = await PostModel.deleteMany({ author: idUser });
+
+    // chatsFromUser.forEach( async (chats) => {
+    //   await PostModel.findByIdAndDelete(chats._id)
+    // })
+
+    return res.status(200).json({
+      // deletedChats,
+      deletedUser,
+      postsFromUser,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
+});
 
 module.exports = router;
