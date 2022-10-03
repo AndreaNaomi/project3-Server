@@ -70,6 +70,7 @@ const UserSchema = new Schema(
       type: String,
       enum: [
         "solteiro",
+        "noivo",
         "casado",
         "enrolado",
         "ficando",
@@ -78,6 +79,8 @@ const UserSchema = new Schema(
         "poliamor",
         "noivo",
       ], required: true,
+
+
     },
     mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {
@@ -95,9 +98,9 @@ const UserSchema = new Schema(
       ], required: true,
     },
 
-    bio: { type: String },
+    bio: { type: String, minlength: 10, maxlength: 500 },
     chats: [{ type: Schema.Types.ObjectId, ref: "Chat" }],
-    posts: [{ type: Schema.Types.ObjectId, ref: "Posts" }],
+    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
@@ -105,6 +108,7 @@ const UserSchema = new Schema(
     timestamps: true,
   }
 );
+
 
 const UserModel = mongoose.model("User", UserSchema);
 
