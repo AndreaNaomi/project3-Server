@@ -79,6 +79,8 @@ const UserSchema = new Schema(
         "poliamor",
         "noivo",
       ], required: true,
+
+
     },
     mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {
@@ -105,6 +107,7 @@ const UserSchema = new Schema(
     timestamps: true,
   }
 );
+
 
 const UserModel = mongoose.model("User", UserSchema);
 

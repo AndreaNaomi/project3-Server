@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const UserModel = require("../models/User.model");
+const PostModel = require("../models/Post.model");
+const ChatModel = require("../models/Chat.model");
 
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -149,5 +151,64 @@ router.get("/user/:id", async (req, res) => {
     return res.status(400).json(error);
   }
 });
+
+router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
+    try {
+      const loggedInUser = req.currentUser;
+      console.log(req.body);
+  
+      const editedUser = await UserModel.findByIdAndUpdate(
+        loggedInUser._id,
+        {
+          ...req.body,
+        },
+        { new: true, runValidators: true }
+      );
+  
+      delete editedUser._doc.passwordHash;
+      console.log(editedUser);
+      return res.status(200).json(editedUser);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json(error);
+    }
+  });
+
+  // router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
+  //   try {
+
+  //       const idUser = req.currentUser._id
+
+  //       const deletedUser = await UserModel.findByIdAndDelete({idUser}, {$pull: {posts: posts, chats: chats} });
+  //       delete deletedUser._doc.passwordHash;
+
+  //       const postsFromUser = await PostModel.findOne({idUser});
+
+  //       // postsFromUser.forEach( async (posts) => { 
+  //       //     await PostModel.findByIdAndDelete(posts._id)
+  //       // })
+
+  //       const deletedPosts = await PostModel.deleteMany({ author: idUser });
+        
+  //       const chatsFromUser = await ChatModel.findOne(idUser);
+        
+  //       const deletedChats = await PostModel.deleteMany({ author: idUser });
+
+  //       chatsFromUser.forEach( async (chats) => { 
+  //         await PostModel.findByIdAndDelete(chats._id)
+  //       })
+
+        
+  //   return res.status(200).json({
+  //     deleteduser: deletedUser,
+  //     postsFromUser: deletedPosts,
+  //     chatsFromUser: deletedChats,
+  //   })
+
+  //   } catch (error) {
+  //       console.log(error);
+  //       return res.status(400).json(error);
+  //   }
+  // })
 
 module.exports = router;
