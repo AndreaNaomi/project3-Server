@@ -73,12 +73,12 @@ const UserSchema = new Schema(
         "enrolado",
         "ficando",
         "relacionamento monogamico",
-        "relacionamento aberto",
+        "relacionamento não monogamico",
         "poliamor",
         "noivo",
       ],
     },
-    mostrar: { type: String, enum: ["Homens", "Mulheres", "Todos"] },
+    mostrar: { type: String, enum: ["Masculino", "Feminino", "Todos"] },
     interesses: {
       type: String,
       enum: [
@@ -93,9 +93,9 @@ const UserSchema = new Schema(
         "cybersecurity",
       ],
     },
-    bio: "",
-    chats: [ref: chat],
-    posts: [ref: posts]
+    // bio: "",
+    // chats: [ref: chat],
+    // posts: [ref: posts]
   },
   {
     timestamps: true,
