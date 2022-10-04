@@ -2,7 +2,6 @@ const express = require("express");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 const isAuth = require("../middlewares/isAuth");
 const router = express.Router();
-// const PostModel = require("../models/Post.model");
 const UserModel = require("../models/User.model");
 const ChatModel = require("../models/Chat.model");
 
@@ -15,14 +14,19 @@ router.post(
       const idAuthor = req.currentUser._id;
       const { idUser } = req.params;
 
-    //   if() {
-
-    //   }
+      const oldChat = await ChatModel.findById(idAuthor);
+      if (oldChat.includes(idUser)) {
+        return;
+      }
 
       const newChat = await ChatModel.create({ users: [idUser, idAuthor] });
 
-      await UserModel.findByIdAndUpdate(idAuthor, {$push: {chats: newChat._id}})
-      await UserModel.findByIdAndUpdate(idUser, {$push: {chats: newChat._id}})
+      await UserModel.findByIdAndUpdate(idAuthor, {
+        $push: { chats: newChat._id },
+      });
+      await UserModel.findByIdAndUpdate(idUser, {
+        $push: { chats: newChat._id },
+      });
 
       return res.status(201).json(newChat);
     } catch (error) {
@@ -43,9 +47,13 @@ router.post(
 
       const message = { mensagem: req.body.mensagem, author: idAuthor };
 
-      const chat = await ChatModel.findByIdAndUpdate(idConversa, {
-        $push: { conversa: message }
-      }, {new: true});
+      const chat = await ChatModel.findByIdAndUpdate(
+        idConversa,
+        {
+          $push: { conversa: message },
+        },
+        { new: true }
+      );
 
       return res.status(201).json(chat);
     } catch (error) {
@@ -55,17 +63,22 @@ router.post(
   }
 );
 
-router.get("/messages/:idConversa", isAuth, attachCurrentUser, async (req, res) => {
+router.get(
+  "/messages/:idConversa",
+  isAuth,
+  attachCurrentUser,
+  async (req, res) => {
     try {
-        const {idConversa} = req.params
+      const { idConversa } = req.params;
 
-        const messages = await ChatModel.findById(idConversa)
+      const messages = await ChatModel.findById(idConversa);
 
-        return res.status(200).json(messages)
+      return res.status(200).json(messages);
     } catch (error) {
-        console.log(error)
-        return res.status(400).json(error)
+      console.log(error);
+      return res.status(400).json(error);
     }
-})
+  }
+);
 
 module.exports = router;
