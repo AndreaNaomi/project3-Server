@@ -216,8 +216,6 @@ router.put(
   isAuth,
   attachCurrentUser,
   async (req, res) => {
-    const idUserFollowing = req.currentUser._id;
-    const { idUserFollowed } = req.params;
 
     try {
       const idUserFollowing = req.currentUser._id;
@@ -270,7 +268,6 @@ router.put(
           new: true,
         }
       );
-
 
 
       return res.status(200).json(userUnfollowing);
