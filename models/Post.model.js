@@ -15,9 +15,3 @@ const PostSchema = new Schema(
 const PostModel = mongoose.model("Post", PostSchema);
 
 module.exports = PostModel;
-
-// posts
-
-content: "";
-author: "idUser";
-like: 0;
