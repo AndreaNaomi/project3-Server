@@ -152,12 +152,29 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
+//ROTA PROTEGIDA
 router.get("/all", isAuth, attachCurrentUser, async (req, res) => {
   try {
     const loggedInUser = req.currentUser;
     const allUsers = await UserModel.find(loggedInUser._id, {
       passwordHash: 0,
     });
+
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    console.log(error);
+    return res(400).json(error);
+  }
+});
+//ROTA ABERTA
+router.get("/guest-all", async (req, res) => {
+  try {
+    const allUsers = await UserModel.find(
+      {},
+      {
+        passwordHash: 0,
+      }
+    );
 
     return res.status(200).json(allUsers);
   } catch (error) {
@@ -216,7 +233,6 @@ router.put(
   isAuth,
   attachCurrentUser,
   async (req, res) => {
-
     try {
       const idUserFollowing = req.currentUser._id;
       const { idUserFollowed } = req.params;
@@ -268,7 +284,6 @@ router.put(
           new: true,
         }
       );
-
 
       return res.status(200).json(userUnfollowing);
     } catch (error) {
