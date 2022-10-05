@@ -19,6 +19,8 @@ app.use("/posts", PostsRoute)
 const ChatsRoute = require("./routes/chats.routes")
 app.use("/chat", ChatsRoute) 
 
+const UpImgRoute = require("./routes/uploading.routes");
+app.use("/", UpImgRoute);
 
 app.listen(Number(process.env.PORT), () => {
   console.log("Server up and running on port 4000");
