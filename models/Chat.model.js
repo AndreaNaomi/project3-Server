@@ -3,14 +3,14 @@ const Schema = mongoose.Schema;
 
 const ChatSchema = new Schema(
   {
-    users: [{ type: Schema.Types.ObjectId, ref: "User" }], 
+    users: [{ type: Schema.Types.ObjectId, ref: "User" }],
     conversa: [
       {
         mensagem: "",
         author: { type: Schema.Types.ObjectId, ref: "User" },
-        hora: {type: Date, default: Date.now},
+        hora: { type: Date, default: Date.now },
       },
-    ], 
+    ],
   },
   {
     timestamps: true,
