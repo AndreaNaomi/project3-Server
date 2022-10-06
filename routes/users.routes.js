@@ -12,16 +12,16 @@ const generateToken = require("../config/jwt.config");
 const isAuth = require("../middlewares/isAuth");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 
-const nodemailer = require("nodemailer");
-let transporter = nodemailer.createTransport({
-  service: "Hotmail",
-  auth: {
-    secure: false,
-    user: process.env.NODEMAILER_EMAIL,
-    pass: process.env.NODEMAILER_PASSWORD,
-  },
-  tls: { rejectUnauthorized: false },
-});
+// const nodemailer = require("nodemailer");
+// let transporter = nodemailer.createTransport({
+//   service: "Hotmail",
+//   auth: {
+//     secure: false,
+//     user: process.env.NODEMAILER_EMAIL,
+//     pass: process.env.NODEMAILER_PASSWORD,
+//   },
+//   tls: { rejectUnauthorized: false }, APAGA ESSE E TESTA DE NOVO
+// });
 
 router.post("/sign-up", async (req, res) => {
   try {
@@ -51,14 +51,14 @@ router.post("/sign-up", async (req, res) => {
 
     delete newUser._doc.passwordHash;
 
-    const mailOptions = {
-      from: "projectsbyAna@hotmail.com",
-      to: email,
-      subject: "Ativação de conta",
-      html: `<p>Clique no link para ativar sua conta:<p> <a href=http://localhost:4000/users/activate-account/${newUser._id}>LINK</a>`,
-    };
+    // const mailOptions = {
+    //   from: "projectsbyAna@hotmail.com",
+    //   to: email,
+    //   subject: "Ativação de conta",
+    //   html: `<p>Clique no link para ativar sua conta:<p> <a href=http://localhost:4000/users/activate-account/${newUser._id}>LINK</a>`,
+    // };
 
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
 
     return res.status(201).json(newUser);
   } catch (error) {
@@ -104,10 +104,8 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
-  
   try {
     const loggedInUser = req.currentUser;
-
 
     const user = await UserModel.findById(loggedInUser._id, {
       passwordHash: 0,
@@ -130,9 +128,9 @@ router.get("/activate-account/:idUser", async (req, res) => {
       return res.send("Erro na ativação da conta");
     }
 
-    await UserModel.findByIdAndUpdate(idUser, {
-      emailConfirm: true,
-    });
+    // await UserModel.findByIdAndUpdate(idUser, {
+    //   emailConfirm: true,
+    // });
 
     res.send(`<h1>Usuário ativado!!!!!!!</h1>`);
   } catch (error) {
@@ -248,12 +246,12 @@ router.put(
         $addToSet: { followers: idUserFollowing },
       });
 
-      const mailOptions = {
-        from: "projectsbyAna@hotmail.com",
-        to: userFollowed.email,
-        subject: "Alguém te seguiu!",
-        html: `<p>Você tem um novo seguidor: ${userFollowed.username}! :)</p>`,
-      };
+      // const mailOptions = {
+      //   from: "projectsbyAna@hotmail.com",
+      //   to: userFollowed.email,
+      //   subject: "Alguém te seguiu!",
+      //   html: `<p>Você tem um novo seguidor: ${userFollowed.username}! :)</p>`,
+      // };
 
       await transporter.sendMail(mailOptions);
 
