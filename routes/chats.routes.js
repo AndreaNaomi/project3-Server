@@ -14,9 +14,19 @@ router.post(
       const idAuthor = req.currentUser._id;
       const { idUser } = req.params;
 
-      const oldChat = await ChatModel.findById(idAuthor);
-      if (oldChat.includes(idUser)) {
-        return;
+      const oldChat = await ChatModel.find({
+        $and: [
+          {
+            users: { $in: [idAuthor] },
+          },
+          {
+            users: { $in: [idUser] },
+          },
+        ],
+      });
+      // console.log(oldChat);
+      if (oldChat.length > 0) {
+        return res.status(200).json({ oldChat: oldChat[0]._id });
       }
 
       const newChat = await ChatModel.create({ users: [idUser, idAuthor] });
@@ -71,8 +81,8 @@ router.get(
     try {
       const { idConversa } = req.params;
 
-      const messages = await ChatModel.findById(idConversa);
-
+      const messages = await ChatModel.findById(idConversa)
+      console.log("passou na rota")
       return res.status(200).json(messages);
     } catch (error) {
       console.log(error);
