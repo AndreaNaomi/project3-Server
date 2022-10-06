@@ -104,10 +104,10 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
-  console.log("oiii jino aqui");
+  
   try {
     const loggedInUser = req.currentUser;
-    console.log(req.currentUser, "console do jino jino jino");
+    console.log(req.currentUser);
 
     const user = await UserModel.findById(loggedInUser._id, {
       passwordHash: 0,
