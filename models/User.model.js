@@ -10,7 +10,7 @@ const UserSchema = new Schema(
       unique: true,
       match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
     },
-    emailConfirm: { type: Boolean, default: false },
+    // emailConfirm: { type: Boolean, default: false },
     age: { type: Number, required: true },
     sexo: {
       type: String,
