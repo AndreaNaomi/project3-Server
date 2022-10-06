@@ -12,16 +12,15 @@ const generateToken = require("../config/jwt.config");
 const isAuth = require("../middlewares/isAuth");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 
-// const nodemailer = require("nodemailer");
-// let transporter = nodemailer.createTransport({
-//   service: "Hotmail",
-//   auth: {
-//     secure: false,
-//     user: process.env.NODEMAILER_EMAIL,
-//     pass: process.env.NODEMAILER_PASSWORD,
-//   },
-//   tls: { rejectUnauthorized: false }, APAGA ESSE E TESTA DE NOVO
-// });
+const nodemailer = require("nodemailer");
+let transporter = nodemailer.createTransport({
+  service: "Hotmail",
+  auth: {
+    secure: false,
+    user: process.env.NODEMAILER_EMAIL,
+    pass: process.env.NODEMAILER_PASSWORD,
+  },
+});
 
 router.post("/sign-up", async (req, res) => {
   try {
