@@ -39,10 +39,10 @@ router.post("/sign-up", async (req, res) => {
     }
 
     const salt = await bcrypt.genSalt(saltRounds);
-    console.log(salt);
+    // console.log(salt);
 
     const passwordHash = await bcrypt.hash(password, salt);
-    console.log(passwordHash);
+    // console.log(passwordHash);
 
     const newUser = await UserModel.create({
       ...req.body,
@@ -63,14 +63,14 @@ router.post("/sign-up", async (req, res) => {
     return res.status(201).json(newUser);
   } catch (error) {
     console.log(error);
-    return res.status(400).json(error);
+    return res.status(400).json({ msg: "o erro ta no fim da rota" });
   }
 });
 
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email);
+    // console.log(email);
 
     if (!email || !password) {
       return res
@@ -79,7 +79,7 @@ router.post("/login", async (req, res) => {
     }
 
     const user = await UserModel.findOne({ email: email });
-    console.log(user, "feito");
+    // console.log(user, "feito");
 
     if (!user) {
       return res.status(400).json({ message: "Usuário não cadastrado" });
@@ -104,9 +104,10 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
+  
   try {
     const loggedInUser = req.currentUser;
-    console.log(loggedInUser);
+
 
     const user = await UserModel.findById(loggedInUser._id, {
       passwordHash: 0,
@@ -144,7 +145,7 @@ router.get("/user/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await UserModel.find({ id });
+    const user = await UserModel.findById(id);
 
     return res.status(200).json(user);
   } catch (error) {
@@ -155,10 +156,8 @@ router.get("/user/:id", async (req, res) => {
 //ROTA PROTEGIDA
 router.get("/all", isAuth, attachCurrentUser, async (req, res) => {
   try {
-    const loggedInUser = req.currentUser;
-    const allUsers = await UserModel.find(loggedInUser._id, {
-      passwordHash: 0,
-    });
+    // const loggedInUser = req.currentUser;
+    const allUsers = await UserModel.find();
 
     return res.status(200).json(allUsers);
   } catch (error) {
@@ -186,7 +185,7 @@ router.get("/guest-all", async (req, res) => {
 router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
   try {
     const loggedInUser = req.currentUser;
-    console.log(req.body);
+    // console.log(req.body);
 
     const editedUser = await UserModel.findByIdAndUpdate(
       loggedInUser._id,
@@ -197,7 +196,7 @@ router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
     );
 
     delete editedUser._doc.passwordHash;
-    console.log(editedUser);
+    // console.log(editedUser);
     return res.status(200).json(editedUser);
   } catch (error) {
     console.log(error);
@@ -208,7 +207,7 @@ router.put("/edit", isAuth, attachCurrentUser, async (req, res) => {
 router.delete("/delete", isAuth, attachCurrentUser, async (req, res) => {
   try {
     const idUser = req.currentUser._id;
-    console.log(idUser);
+    // console.log(idUser);
 
     const deletedUser = await UserModel.findByIdAndDelete(idUser);
     delete deletedUser._doc.passwordHash;

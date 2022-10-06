@@ -39,6 +39,8 @@ router.put(
         { new: true, runValidators: true }
       );
 
+      console.log(editPost);
+
       return res.status(200).json(editPost);
     } catch (error) {
       console.log(error);
@@ -49,7 +51,7 @@ router.put(
 
 router.get("/all-posts", isAuth, attachCurrentUser, async (req, res) => {
   try {
-    const allPosts = await PostModel.find();
+    const allPosts = await PostModel.find().populate("author");
 
     return res.status(200).json(allPosts);
   } catch (error) {
