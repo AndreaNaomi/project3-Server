@@ -8,7 +8,7 @@ const app = express();
 
 
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: process.env.REACT_APP_URI }));
 
 const UsersRoute = require("./routes/users.routes");
 app.use("/users", UsersRoute);
