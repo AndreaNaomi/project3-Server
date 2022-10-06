@@ -12,15 +12,15 @@ const generateToken = require("../config/jwt.config");
 const isAuth = require("../middlewares/isAuth");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 
-const nodemailer = require("nodemailer");
-let transporter = nodemailer.createTransport({
-  service: "Hotmail",
-  auth: {
-    secure: false,
-    user: process.env.NODEMAILER_EMAIL,
-    pass: process.env.NODEMAILER_PASSWORD,
-  },
-});
+// const nodemailer = require("nodemailer");
+// let transporter = nodemailer.createTransport({
+//   service: "Hotmail",
+//   auth: {
+//     secure: false,
+//     user: process.env.NODEMAILER_EMAIL,
+//     pass: process.env.NODEMAILER_PASSWORD,
+//   },
+// });
 
 router.post("/sign-up", async (req, res) => {
   try {
@@ -123,15 +123,15 @@ router.get("/activate-account/:idUser", async (req, res) => {
 
     const user = await UserModel.findOne({ _id: idUser });
 
-    if (!user) {
-      return res.send("Erro na ativação da conta");
-    }
+    // if (!user) {
+    //   return res.send("Erro na ativação da conta");
+    // }
 
     // await UserModel.findByIdAndUpdate(idUser, {
     //   emailConfirm: true,
     // });
 
-    res.send(`<h1>Usuário ativado!!!!!!!</h1>`);
+    // res.send(`<h1>Usuário ativado!!!!!!!</h1>`);
   } catch (error) {
     console.log(error);
     return res.status(400).json(error);
