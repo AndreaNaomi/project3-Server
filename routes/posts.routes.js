@@ -10,7 +10,7 @@ router.post("/create-post", isAuth, attachCurrentUser, async (req, res) => {
     const idAuthor = req.currentUser._id;
 
     const newPost = await PostModel.create({ ...req.body, author: idAuthor });
-
+    console.log(newPost, "new post")
     const author = await UserModel.findByIdAndUpdate(
       idAuthor,
       { $push: { posts: newPost._id } },
